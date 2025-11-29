@@ -90,7 +90,7 @@ export default function Navbar() {
               </a>
 
               <a
-                href="/career"
+                href="/Sarthi"
                 className="hover:text-orange-600 transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
