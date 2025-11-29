@@ -8,7 +8,7 @@ import Footer from "@/components/footer"
 
 export default function TrekRegistration() {
   return (
-    <>
+    <div className=" relative min-h-screen bg-gradient-to-t to-amber-100 via-orange-50 from-white overflow-hidden  ">
       <Navbar />
       <Hero />
       <Itinerary />
@@ -16,6 +16,6 @@ export default function TrekRegistration() {
       <Testimonials />
       <Form />
       <Footer />
-    </>
+    </div>
   )
 }

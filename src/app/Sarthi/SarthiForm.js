@@ -77,7 +77,7 @@ export default function SarthiForm() {
   ];
 
   return (
-    <div className="min-h-screen  py-12 px-4 rounded-2xl bg-gradient-to-b from-orange-50/60 via-white to-amber-50/60">
+    <div className="min-h-screen  py-12 px-4 rounded-2xl  mt-20 ">
 
       {/* HEADER */}
       <div className="text-center mb-16 animate-header">
