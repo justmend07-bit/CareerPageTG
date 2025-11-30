@@ -88,7 +88,7 @@ function CareersPage() {
                 href='/Career/Sarthi'
                 className="w-full bg-gradient-to-r from-orange-600 to-amber-600 text-white font-semibold py-4 px-6 rounded-xl hover:from-orange-700 hover:to-amber-700 transition-all duration-300 shadow-md hover:shadow-lg"
               >
-                Explore Sarthi
+                Explore Saarthi
               </a>
             </div>
           </div>
