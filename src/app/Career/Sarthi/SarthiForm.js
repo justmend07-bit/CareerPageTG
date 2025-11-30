@@ -102,7 +102,7 @@ export default function SarthiForm() {
 
 
       {/* FORM CARD */}
-      <div className="max-w-3xl mx-auto bg-white backdrop-blur-xl shadow-xl rounded-3xl p-10 md:p-12 border border-orange-200/40 animate-slideUp">
+      <div className="max-w-3xl mx-auto bg-white  shadow-md rounded-3xl p-10 md:p-12 border border-orange-200/40 animate-slideUp">
 
         {success && (
           <div className="bg-green-100 text-green-800 px-4 py-3 rounded-xl mb-6 border border-green-300 animate-fadeIn">
@@ -114,7 +114,7 @@ export default function SarthiForm() {
 
           <SectionTitle title="Personal Information" />
 
-          <InputField required label="Full Name" name="full_name" placeholder="Enter your full name" icon={User} />
+          <InputField required label="Full Name" name="full_name" placeholder="Enter your full name" icon={User} className="sm:bg-white" />
 
           {/* DOB + Gender */}
           <TwoCol>
@@ -165,12 +165,12 @@ export default function SarthiForm() {
             <InputField required label="State" name="state" placeholder="e.g. Maharashtra" icon={Map} />
           </TwoCol>
 
-          <TextAreaField label="Address" name="address" />
+          <TextAreaField label="Address" name="address" required/>
 
           <SectionTitle title="Background Information" />
 
           <TwoCol>
-            <SelectField label="Occupation" name="occupation" icon={Briefcase}>
+            <SelectField required label="Occupation" name="occupation" icon={Briefcase}>
               <option value="">Select occupation</option>
               <option>Student</option>
               <option>Professional</option>
@@ -268,7 +268,7 @@ const TwoCol = ({ children }) => (
 );
 
 const InputField = ({ label, icon: Icon, ...props }) => (
-  <div className="animate-fadeInSmall">
+  <div className="">
     <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
     <div className="relative">
       {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />}
@@ -282,7 +282,7 @@ const InputField = ({ label, icon: Icon, ...props }) => (
 );
 
 const SelectField = ({ label, icon: Icon, children, ...props }) => (
-  <div className="animate-fadeInSmall">
+  <div className="">
     <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
     <div className="relative">
       {Icon &&
@@ -300,7 +300,7 @@ const SelectField = ({ label, icon: Icon, children, ...props }) => (
 );
 
 const UploadField = ({ label, name, onChange, preview }) => (
-  <div className="animate-fadeInSmall">
+  <div className="">
     <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
 
     <label className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer 
@@ -324,7 +324,7 @@ const UploadField = ({ label, name, onChange, preview }) => (
 );
 
 const ProfileField = ({ label, name, onChange, preview }) => (
-  <div className="animate-fadeInSmall">
+  <div className="">
     <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
 
     <div className="flex items-center gap-4">
