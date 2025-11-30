@@ -11,7 +11,7 @@ function WhoIsSarthi() {
           <p className="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
             A Saarthi is a trusted travel companion who accompanies elders from their home to the destination and safely back.
             <span className="block mt-4 font-semibold text-orange-600">
-              Not an attendant or babysitter — but someone who supports with respect, patience, and presence.
+              Not an attendant or babysitter — but someone who supports with respect, patience, and presence just like their own children..
             </span>
           </p>
         </div>
