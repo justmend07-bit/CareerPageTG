@@ -17,7 +17,7 @@ function WhoCanJoin() {
 
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-            Who Can Join the Sarthi Family?
+            Who Can Join the Saarthi Family?
           </h2>
         </div>
 
@@ -47,7 +47,7 @@ function WhoCanJoin() {
           
           <p className="text-2xl sm:text-3xl text-white font-semibold leading-relaxed">
             If you can walk with someone with kindness,
-            <span className="block mt-2">you can be a Sarthi.</span>
+            <span className="block mt-2">you can be a Saarthi.</span>
           </p>
         </div>
 

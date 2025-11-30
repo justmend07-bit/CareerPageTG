@@ -68,7 +68,7 @@ function CareersPage() {
               </div>
 
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Sarthi Program
+                Saarthi Program
               </h2>
 
               <p className="text-gray-600 mb-6 leading-relaxed">

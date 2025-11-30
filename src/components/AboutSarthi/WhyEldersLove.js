@@ -17,7 +17,7 @@ function WhyEldersLove() {
         
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-            Why Elders Love Traveling With a Sarthi
+            Why Elders Love Traveling With a Saarthi
           </h2>
         </div>
 
@@ -47,7 +47,7 @@ function WhyEldersLove() {
             <Quote className="w-12 h-12 text-orange-300 flex-shrink-0" />
             <div>
               <p className="text-2xl sm:text-3xl text-gray-800 font-medium italic leading-relaxed">
-                A Sarthi feels like a son or daughter traveling with them.
+                A Saarthi feels like a son or daughter traveling with them.
               </p>
               <div className="mt-6 h-1 w-24 bg-gradient-to-r from-orange-600 to-amber-600 rounded-full"></div>
             </div>

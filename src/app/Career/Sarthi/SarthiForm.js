@@ -41,7 +41,7 @@ export default function SarthiForm() {
     // selected roles
     selectedRoles.forEach((role) => formData.append("roles", role));
 
-    const res = await fetch("/sarthi/api", {
+    const res = await fetch("/saarthi/api", {
       method: "POST",
       body: formData,
     });
@@ -222,7 +222,7 @@ export default function SarthiForm() {
           </div>
 
           <TextAreaField
-            label="Why do you want to become a Sarthi?"
+            label="Why do you want to become a Saarthi?"
             name="motivation"
             rows="6"
             required

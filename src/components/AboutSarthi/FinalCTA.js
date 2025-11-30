@@ -14,7 +14,7 @@ function FinalCTA() {
                 
 
                 <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                    Become a Sarthi Today
+                    Become a Saarthi Today
                 </h2>
 
                 <p className="text-xl sm:text-2xl text-white/95 mb-12 leading-relaxed max-w-3xl mx-auto">
@@ -26,7 +26,7 @@ function FinalCTA() {
                     href="/Career/Sarthi/Register"
                     className="group bg-white text-orange-600 px-10 py-5 rounded-xl font-bold  text-lg hover:bg-gray-50 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 flex items-center justify-center gap-3 mx-auto"
                 >
-                    Apply to Become a Sarthi
+                    Apply to Become a Saarthi
                     <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                 </a>
 

@@ -40,7 +40,7 @@ function WhyBecomeSarthi() {
 
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-            Why Become a Sarthi?
+            Why Become a Saarthi?
           </h2>
         </div>
 
@@ -70,7 +70,7 @@ function WhyBecomeSarthi() {
 
         <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-3xl p-8 sm:p-12 text-center border-2 border-orange-200">
           <p className="text-2xl sm:text-3xl text-gray-800 font-semibold leading-relaxed">
-            Becoming a Sarthi isn't just a role — 
+            Becoming a Saarthi isn't just a role — 
             <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600">
               it's an experience that stays with you.
             </span>

@@ -6,10 +6,10 @@ function WhoIsSarthi() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-            Who is a Sarthi?
+            Who is a Saarthi?
           </h2>
           <p className="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
-            A Sarthi is a trusted travel companion who accompanies elders from their home to the destination and safely back.
+            A Saarthi is a trusted travel companion who accompanies elders from their home to the destination and safely back.
             <span className="block mt-4 font-semibold text-orange-600">
               Not an attendant or babysitter — but someone who supports with respect, patience, and presence.
             </span>

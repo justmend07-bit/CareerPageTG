@@ -6,7 +6,7 @@ function WhyWeCreated() {
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-            Why We Created Sarthi
+            Why We Created Saarthi
           </h2>
         </div>
 
@@ -26,7 +26,7 @@ function WhyWeCreated() {
               </p>
 
               <p className="text-xl text-gray-700 leading-relaxed mb-6">
-                Sarthi was born from this simple truth: every elder deserves the freedom to travel with dignity and confidence.
+                Saarthi was born from this simple truth: every elder deserves the freedom to travel with dignity and confidence.
               </p>
 
               <p className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600">

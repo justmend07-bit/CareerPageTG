@@ -17,7 +17,7 @@ function HeroSection() {
         </div>
 
         <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-          Sarthi — A Companion for
+          Saarthi — A Companion for
           <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600">
             Every Journey
           </span>
@@ -32,7 +32,7 @@ function HeroSection() {
             href="/Career/Sarthi/Register"
             className="group bg-gradient-to-r from-orange-600 to-amber-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-orange-700 hover:to-amber-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
           >
-            Become a Sarthi
+            Become a Saarthi
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </a>
 

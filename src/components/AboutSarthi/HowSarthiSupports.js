@@ -49,7 +49,7 @@ function HowSarthiSupports() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-            How a Sarthi Supports Elders
+            How a Saarthi Supports Elders
           </h2>
         </div>
 
@@ -77,8 +77,8 @@ function HowSarthiSupports() {
 
         <div className="bg-gradient-to-r from-orange-400 to-amber-500 rounded-3xl p-8 sm:p-12 text-center shadow-xl">
           <p className="text-2xl sm:text-3xl font-semibold text-white leading-relaxed">
-            A Sarthi does not take care <span className="italic">for</span> elders — 
-            <span className="block mt-2">a Sarthi cares <span className="italic">with</span> them.</span>
+            A Saarthi does not take care <span className="italic">for</span> elders — 
+            <span className="block mt-2">a Saarthi cares <span className="italic">with</span> them.</span>
           </p>
         </div>
       </div>
