@@ -229,7 +229,7 @@ export default function SarthiForm() {
           />
 
           {/* SUBMIT BUTTON */}
-          <div className="flex justify-end">
+          <div className="flex justify-center">
             <button
               type="submit"
               disabled={submitting}
