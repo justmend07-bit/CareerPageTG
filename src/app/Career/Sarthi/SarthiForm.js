@@ -27,7 +27,16 @@ const ACCEPTED_DOC_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 
 const SarthiSchema = z.object({
   full_name: z.string().min(3, "Enter your full name (min 3 chars)"),
-  dob: z.string().nonempty("Date of birth is required"),
+  dob: z
+  .string()
+  .refine(
+    (val) => {
+      const today = new Date();
+      const selected = new Date(val);
+      return selected <= today;   // 🚨 prevent future dates
+    },
+    { message: "Date cannot be in the future" }
+  ),
   gender: z.enum(["Male", "Female", "Other", "Prefer not to say"]).optional(),
   aadhar_number: z
     .string()
