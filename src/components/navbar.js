@@ -49,7 +49,7 @@ export default function Navbar() {
               <a href="https://tirthghumo.in/" className="hover:text-orange-600 transition-colors">
                 Home
               </a>
-              <a href="#register" className="hover:text-orange-600 transition-colors">
+              <a href="/" className="hover:text-orange-600 transition-colors">
                 Register
               </a>
               <a href="/Career" className="hover:text-orange-600 transition-colors">

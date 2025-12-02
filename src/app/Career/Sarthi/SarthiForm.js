@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Camera,
   Upload,
@@ -13,347 +16,511 @@ import {
   Map,
   Briefcase,
   Building2,
-  Instagram,
 } from "lucide-react";
 
-export default function SarthiForm() {
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState("");
-  const [selectedRoles, setSelectedRoles] = useState([]);
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  // previews
-  const [aadharPreview, setAadharPreview] = useState(null);
-  const [photoPreview, setPhotoPreview] = useState(null);
+// ----------------- Validation schema -----------------
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png"];
+const ACCEPTED_DOC_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 
-  const handleFilePreview = (e, setPreview) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    setPreview(url);
-  };
+const SarthiSchema = z.object({
+  full_name: z.string().min(3, "Enter your full name (min 3 chars)"),
+  dob: z.string().nonempty("Date of birth is required"),
+  gender: z.enum(["Male", "Female", "Other", "Prefer not to say"]).optional(),
+  aadhar_number: z
+    .string()
+    .refine((val) => /^[0-9]{12}$/.test(val), {
+      message: "Aadhar must be exactly 12 digits",
+    }),
+  email: z.string().email("Invalid email address"),
+  mobile: z
+    .string()
+    .refine((val) => /^[0-9]{10}$/.test(val), { message: "Mobile must be 10 digits" }),
+  city: z.string().min(2, "Enter city"),
+  state: z.string().min(2, "Enter state"),
+  address: z.string().min(10, "Enter a full address"),
+  occupation: z.string().min(2, "Enter occupation"),
+  organization: z.string().min(2, "Enter college/organization"),
+  socialmedia: z.string().optional().nullable(),
+  previous_experience: z.string().optional().nullable(),
+  roles: z.array(z.string()).min(1, "Select at least one role"),
+  motivation: z.string().min(20, "Tell us why — at least 20 characters"),
+  // Files validated separately
+  aadhar_front: z.any().optional(),
+  profile_photo: z.any().optional(),
+});
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
+const rolesList = [
+  "On-Ground Volunteer",
+  "Trip Lead",
+  "Content Creator",
+  "Community Engagement",
+  "Operations / Logistics",
+];
 
-    const formData = new FormData(e.target);
-
-    // selected roles
-    selectedRoles.forEach((role) => formData.append("roles", role));
-
-    const res = await fetch("/saarthi/api", {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await res.json();
-    setSubmitting(false);
-
-    if (data.success) {
-      setSuccess("Application submitted successfully!");
-      e.target.reset();
-      setSelectedRoles([]);
-      setAadharPreview(null);
-      setPhotoPreview(null);
-    } else {
-      alert("Something went wrong.");
-    }
-  };
-
-  const handleRoleToggle = (role) => {
-    setSelectedRoles((prev) =>
-      prev.includes(role)
-        ? prev.filter((r) => r !== role)
-        : [...prev, role]
-    );
-  };
-
-  const roles = [
-    "On-Ground Volunteer",
-    "Trip Lead",
-    "Content Creator",
-    "Community Engagement",
-    "Operations / Logistics",
-  ];
-
-  return (
-    <div className="min-h-screen  py-12 px-4 rounded-2xl  mt-20 ">
-
-      {/* HEADER */}
-      <div className="text-center mb-16 animate-header">
-        <h1 className="
-      text-5xl md:text-6xl font-extrabold tracking-tight 
-      bg-gradient-to-r from-orange-400 via-orange-500 to-orange-300 
-      text-transparent bg-clip-text drop-shadow-sm
-    ">
-          Become a Saarthi
-        </h1>
-
-        <p className="text-gray-600 mt-4 text-lg md:text-xl opacity-90 max-w-2xl mx-auto leading-relaxed">
-          Join our on-ground team to coordinate trips, lead groups,
-          create content, and craft unforgettable experiences.
-        </p>
-
-        {/* Decorative underline */}
-        <div className="mt-4 flex justify-center">
-          <div className="h-[3px] w-24 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-300  rounded-full shadow-sm"></div>
-        </div>
-      </div>
-
-
-      {/* FORM CARD */}
-      <div className="max-w-3xl mx-auto bg-white  shadow-md rounded-3xl p-10 md:p-12 border border-orange-200/40 animate-slideUp">
-
-        {success && (
-          <div className="bg-green-100 text-green-800 px-4 py-3 rounded-xl mb-6 border border-green-300 animate-fadeIn">
-            {success}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-14">
-
-          <SectionTitle title="Personal Information" />
-
-          <InputField required label="Full Name" name="full_name" placeholder="Enter your full name" icon={User} className="sm:bg-white" />
-
-          {/* DOB + Gender */}
-          <TwoCol>
-            <InputField required label="Date of Birth" type="date" name="dob" icon={Calendar} />
-            <SelectField label="Gender" name="gender" icon={User} required>
-              <option value="">Select gender</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
-              <option>Prefer not to say</option>
-            </SelectField>
-          </TwoCol>
-
-          <InputField required
-            label="Aadhar Number"
-            name="aadhar_number"
-            placeholder="Enter 12-digit Aadhar number"
-            maxLength="12"
-            icon={CreditCard}
-          />
-
-          {/* File Uploads */}
-          <TwoCol>
-            <UploadField
-              label="Aadhar Card (Front)"
-              name="aadhar_front"
-              preview={aadharPreview}
-              onChange={(e) => handleFilePreview(e, setAadharPreview)}
-            />
-
-            <ProfileField
-              label="Profile Photo"
-              name="profile_photo"
-              preview={photoPreview}
-              onChange={(e) => handleFilePreview(e, setPhotoPreview)}
-            />
-          </TwoCol>
-
-          {/* Contact */}
-          <TwoCol>
-            <InputField required label="Email Address" name="email" type="email" icon={Mail} />
-            <InputField required label="Mobile Number" name="mobile" placeholder="+91 98765 43210" icon={Phone} />
-          </TwoCol>
-
-          {/* City & State */}
-          <TwoCol>
-            <InputField required label="Current City" name="city" placeholder="e.g. Mumbai" icon={MapPin} />
-            <InputField required label="State" name="state" placeholder="e.g. Maharashtra" icon={Map} />
-          </TwoCol>
-
-          <TextAreaField label="Address" name="address" required/>
-
-          <SectionTitle title="Background Information" />
-
-          <TwoCol>
-            <SelectField required label="Occupation" name="occupation" icon={Briefcase}>
-              <option value="">Select occupation</option>
-              <option>Student</option>
-              <option>Professional</option>
-              <option>Freelancer</option>
-              <option>Entrepreneur</option>
-            </SelectField>
-
-            <InputField required
-              label="College / Organization Name"
-              name="organization"
-              icon={Building2}
-            />
-          </TwoCol>
-
-          <InputField
-            label="Social media handle (optional)"
-            name="socialmedia"
-            placeholder=""
-
-          />
-
-          <InputField
-            label="Previous experience(if any)"
-            name="previous_experience"
-            placeholder=""
-
-          />
-
-          <SectionTitle title="Roles & Motivation" required/>
-
-          {/* Roles */}
-          <div>
-            <p className="block text-sm font-medium text-gray-700 mb-3">Roles of Interest</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {roles.map((role) => (
-                <button
-                  key={role}
-                  type="button"
-                  onClick={() => handleRoleToggle(role)}
-                  className={`px-5 py-3 rounded-xl text-sm font-medium transition-all animate-fadeInSmall ${selectedRoles.includes(role)
-                      ? "bg-orange-500 text-white shadow-md scale-[1.02]"
-                      : "bg-gray-100 text-gray-700 hover:bg-orange-100"
-                    }`}
-                >
-                  {role}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <TextAreaField
-            label="Why do you want to become a Saarthi?"
-            name="motivation"
-            rows="6"
-            required
-          />
-
-          {/* SUBMIT BUTTON */}
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              disabled={submitting}
-              className="px-10 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-50"
-            >
-              {submitting ? "Submitting..." : "Submit Application"}
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* Animations */}
-      <style>{`
-        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: translateY(0) } }
-        @keyframes fadeInSmall { from { opacity: 0; transform: scale(.95) } to { opacity: 1; transform: scale(1) } }
-
-        .animate-fadeIn { animation: fadeIn .6s ease-out }
-        .animate-slideUp { animation: slideUp .7s ease-out }
-        .animate-fadeInSmall { animation: fadeInSmall .35s ease-out }
-      `}</style>
-    </div>
-  );
-}
-
-/* ------------------ COMPONENTS ------------------ */
-
-const SectionTitle = ({ title }) => (
-  <h2 className="text-2xl font-bold text-gray-900 mb-6 animate-fadeInSmall">
-    {title}
-  </h2>
+// ----------------- Helper Components -----------------
+const FieldLabel = ({ children, required }) => (
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    {children} {required ? <span className="text-red-500">*</span> : null}
+  </label>
 );
 
-const TwoCol = ({ children }) => (
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">{children}</div>
+const ErrorText = ({ children }) => (
+  <p className="text-sm text-red-600 mt-2">{children}</p>
 );
 
-const InputField = ({ label, icon: Icon, ...props }) => (
-  <div className="">
-    <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
+const Input = React.forwardRef(({ icon: Icon, error, className = "", ...props }, ref) => (
+  <div>
     <div className="relative">
       {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />}
       <input
+        ref={ref}
         {...props}
-        className="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl focus:ring-2 
-          focus:ring-orange-400 focus:bg-white outline-none transition-all"
+        className={`w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"
+          } ${className}`}
       />
     </div>
+    {error ? <ErrorText>{error.message}</ErrorText> : null}
   </div>
-);
+));
+Input.displayName = "Input";
 
-const SelectField = ({ label, icon: Icon, children, ...props }) => (
-  <div className="">
-    <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
+const Select = ({ icon: Icon, children, error, ...props }) => (
+  <div>
     <div className="relative">
-      {Icon &&
-        <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-      }
+      {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />}
       <select
         {...props}
-        className="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl focus:ring-2 
-          focus:ring-orange-400 focus:bg-white outline-none appearance-none transition-all"
+        className={`w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"
+          }`}
       >
         {children}
       </select>
     </div>
+    {error ? <ErrorText>{error.message}</ErrorText> : null}
   </div>
 );
 
-const UploadField = ({ label, name, onChange, preview }) => (
-  <div className="">
-    <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
-
-    <label className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer 
-      hover:border-orange-400 hover:bg-orange-50/40 transition-all hover:scale-[1.01] block">
-
-      {preview ? (
-        <img src={preview} className="mx-auto h-32 object-cover rounded-xl shadow-sm" />
-      ) : (
-        <>
-          <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-          <p className="text-sm text-gray-600">
-            <span className="text-orange-600 font-medium">Upload</span> or drag & drop
-          </p>
-          <p className="text-xs text-gray-400 mt-1">PNG, JPG, PDF up to 10MB</p>
-        </>
-      )}
-
-      <input type="file" name={name} className="hidden" onChange={onChange} />
-    </label>
-  </div>
-);
-
-const ProfileField = ({ label, name, onChange, preview }) => (
-  <div className="">
-    <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
-
-    <div className="flex items-center gap-4">
-      {preview ? (
-        <img
-          src={preview}
-          className="w-20 h-20 rounded-full object-cover shadow-md"
-        />
-      ) : (
-        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center shadow-inner">
-          <Camera className="w-8 h-8 text-gray-400" />
-        </div>
-      )}
-
-      <label className="px-6 py-2 border border-gray-300 rounded-xl shadow-sm text-sm hover:bg-gray-100 cursor-pointer transition-all">
-        Change
-        <input type="file" name={name} className="hidden" onChange={onChange} />
-      </label>
-    </div>
-  </div>
-);
-
-const TextAreaField = ({ label, ...props }) => (
-  <div className="animate-fadeInSmall">
-    <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
+const TextArea = ({ error, ...props }) => (
+  <div>
     <textarea
       {...props}
-      className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:ring-2 
-        focus:ring-orange-400 focus:bg-white outline-none resize-none transition-all"
-    ></textarea>
+      className={`w-full px-4 py-3 rounded-xl outline-none transition-all resize-none ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"
+        }`}
+    />
+    {error ? <ErrorText>{error.message}</ErrorText> : null}
   </div>
 );
+
+function FileInput({ label, accept, controller, previewUrl, setPreviewUrl, error }) {
+  // controller: from react-hook-form Controller field
+  return (
+    <div>
+      <FieldLabel required>{label}</FieldLabel>
+      <div className="flex gap-4 items-start">
+        <div className="flex-1">
+          <label className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-orange-400 hover:bg-orange-50/30 transition-all block">
+            {previewUrl ? (
+              <img src={previewUrl} alt="preview" className="mx-auto h-32 object-cover rounded-xl shadow-sm" />
+            ) : (
+              <div className="py-6">
+                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                <p className="text-sm text-gray-600"><span className="text-orange-600 font-medium">Upload</span> or drag & drop</p>
+                <p className="text-xs text-gray-400 mt-1">PNG, JPG, PDF up to 10MB</p>
+              </div>
+            )}
+            <input
+              type="file"
+              accept={accept}
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                controller.onChange(file ?? null);
+                if (!file) return setPreviewUrl(null);
+
+                // client-side validation for file
+                if (file.size > MAX_FILE_SIZE) {
+                  controller.onChange(null);
+                  setPreviewUrl(null);
+                  controller.setError?.({ message: "File is larger than 10MB" });
+                  return;
+                }
+                if (!accept.includes(file.type)) {
+                  controller.onChange(null);
+                  setPreviewUrl(null);
+                  controller.setError?.({ message: "Unsupported file type" });
+                  return;
+                }
+
+                const url = URL.createObjectURL(file);
+                setPreviewUrl(url);
+              }}
+            />
+          </label>
+          {error ? <ErrorText>{error.message}</ErrorText> : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ----------------- Main Component -----------------
+export default function SaarthiRegistrationForm() {
+  const [aadharPreview, setAadharPreview] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [serverError, setServerError] = useState(null);
+  const [success, setSuccess] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors, isSubmitting },
+    reset,
+    setError,
+    setValue
+  } = useForm({
+    resolver: zodResolver(SarthiSchema),
+    defaultValues: {
+      roles: [],
+    },
+  });
+
+  // convert roles toggle to controlled field
+  const [selectedRoles, setSelectedRoles] = useState([]);
+  useEffect(() => {
+    // sync to react-hook-form by setting value in a hidden input via register
+    // but we'll rely on manual append when submitting
+  }, [selectedRoles]);
+
+  const toggleRole = (role) => {
+    setSelectedRoles((prev) => {
+      const updated = prev.includes(role)
+        ? prev.filter((r) => r !== role)
+        : [...prev, role];
+
+      setValue("roles", updated); // <-- THIS FIXES EVERYTHING
+
+      return updated;
+    });
+  };
+
+
+  const onSubmit = async (values) => {
+    setServerError(null);
+    setSuccess("");
+
+    values.roles = selectedRoles;
+    if (selectedRoles.length === 0) {
+      setError("roles", { message: "Select at least one role" });
+      return;
+    }
+
+    // File validations
+    const aadhar = values.aadhar_front || null;
+    const photo = values.profile_photo || null;
+
+    if (aadhar) {
+      if (aadhar.size > MAX_FILE_SIZE) {
+        setError("aadhar_front", { message: "Aadhar file is larger than 10MB" });
+        return;
+      }
+      if (!ACCEPTED_DOC_TYPES.includes(aadhar.type)) {
+        setError("aadhar_front", { message: "Unsupported Aadhar file type" });
+        return;
+      }
+    }
+
+    if (photo) {
+      if (photo.size > MAX_FILE_SIZE) {
+        setError("profile_photo", { message: "Photo is larger than 10MB" });
+        return;
+      }
+      if (!ACCEPTED_IMAGE_TYPES.includes(photo.type)) {
+        setError("profile_photo", { message: "Unsupported photo type" });
+        return;
+      }
+    }
+
+    // Convert selected roles → backend expects STRING
+    const rolesString = selectedRoles.join(", ");
+
+    // Prepare FormData with CORRECT field names (backend-matched)
+    const fd = new FormData();
+    fd.append("full_name", values.full_name);
+    fd.append("date_of_birthday", values.dob); // rename
+    fd.append("gender", values.gender);
+    fd.append("aadhar_number", values.aadhar_number);
+
+    if (aadhar) fd.append("aadhar_card_image", aadhar); // rename
+    if (photo) fd.append("profile_image", photo);       // rename
+
+    fd.append("email_address", values.email);           // rename
+    fd.append("contact_number", values.mobile);         // rename
+    fd.append("whatsapp_number", values.mobile);        // required by backend
+
+    fd.append("current_city", values.city);             // rename
+    fd.append("state", values.state);
+    fd.append("address", values.address);
+
+    fd.append("occupation", values.occupation);
+    fd.append("organization_name", values.organization); // rename
+
+    fd.append("job_role", rolesString); // backend wants string
+    fd.append("role", rolesString);
+
+    fd.append("work_exp", values.previous_experience || "");
+    fd.append("company_id", ""); // backend allows optional
+    fd.append("profile_url", values.socialmedia || "");
+    fd.append("motive", values.motivation); // rename
+
+    try {
+      const res = await fetch(BACKEND, {
+        method: "POST",
+        body: fd,
+      });
+
+      if (!res.ok) {
+        let message = `Server Error: ${res.status}`;
+        try {
+          const json = await res.json();
+          if (json?.error) message = json.error;
+        } catch (_) { }
+
+        throw new Error(message);
+      }
+
+      const data = await res.json();
+      // Backend might return success: true OR {message: "..."} OR anything truthy
+      if (data?.success || data?.message || data?.status === "success") {
+        setSuccess(data?.message || "Application submitted successfully!");
+        reset();
+        setSelectedRoles([]);
+        setAadharPreview(null);
+        setPhotoPreview(null);
+        return;
+      }
+      if (res.ok) {
+        sessionStorage.setItem("saarthi_success", "1");
+        window.location.href = "/Career/Sarthi/success";
+        return;
+      }
+      // if no known success signal
+      throw new Error(data?.message || "Unknown server response");
+
+    } catch (err) {
+      console.error(err);
+      setServerError(err.message || "Submission failed");
+    }
+  };
+
+  return (
+    <div className="min-h-screen py-12 px-4 rounded-2xl mt-6">
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-16 animate-header">
+          <h1 className="
+      text-5xl md:text-6xl font-extrabold tracking-tight 
+      bg-gradient-to-r from-orange-400 via-orange-500 to-orange-300 
+      text-transparent bg-clip-text drop-shadow-sm
+    ">
+            Become a Saarthi
+          </h1>
+
+          <p className="text-gray-600 mt-4 text-lg md:text-xl opacity-90 max-w-2xl mx-auto leading-relaxed">
+            Join our on-ground team to coordinate trips, lead groups,
+            create content, and craft unforgettable experiences.
+          </p>
+
+          {/* Decorative underline */}
+          <div className="mt-4 flex justify-center">
+            <div className="h-[3px] w-24 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-300  rounded-full shadow-sm"></div>
+          </div>
+        </div>
+
+        <div className="bg-white shadow-md rounded-3xl p-8 md:p-10 border border-orange-200/30">
+          {success && (
+            <div className="bg-green-100 text-green-800 px-4 py-3 rounded-xl mb-6 border border-green-300">{success}</div>
+          )}
+
+          {serverError && (
+            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-xl mb-6 border border-red-200">{serverError}</div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            <section>
+              <h2 className="text-2xl font-bold mb-4">Personal Information</h2>
+
+              <div className="space-y-4">
+                <div>
+                  <FieldLabel required>Full Name</FieldLabel>
+                  <Input {...register("full_name")} icon={User} error={errors.full_name} placeholder="John Doe" />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <FieldLabel required>Date of Birth</FieldLabel>
+                    <Input type="date" {...register("dob")} icon={Calendar} error={errors.dob} />
+                  </div>
+
+                  <div>
+                    <FieldLabel required>Gender</FieldLabel>
+                    <Select {...register("gender")} icon={User} error={errors.gender}>
+                      <option value="">Select gender</option>
+                      <option>Male</option>
+                      <option>Female</option>
+                      <option>Other</option>
+                      <option>Prefer not to say</option>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <FieldLabel required>Aadhar Number</FieldLabel>
+                  <Input {...register("aadhar_number")} icon={CreditCard} placeholder="123412341234" error={errors.aadhar_number} />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Controller
+                    control={control}
+                    name="aadhar_front"
+                    render={({ field }) => (
+                      <FileInput
+                        label="Aadhar Card (Front)"
+                        accept={ACCEPTED_DOC_TYPES}
+                        controller={{ ...field, setError }}
+                        previewUrl={aadharPreview}
+                        setPreviewUrl={setAadharPreview}
+                        error={errors.aadhar_front}
+                      />
+                    )}
+                  />
+
+                  <Controller
+                    control={control}
+                    name="profile_photo"
+                    render={({ field }) => (
+                      <FileInput
+                        label="Profile Photo"
+                        accept={ACCEPTED_IMAGE_TYPES}
+                        controller={{ ...field, setError }}
+                        previewUrl={photoPreview}
+                        setPreviewUrl={setPhotoPreview}
+                        error={errors.profile_photo}
+                      />
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <FieldLabel required>Email</FieldLabel>
+                    <Input {...register("email")} type="email" icon={Mail} error={errors.email} placeholder="name@example.com" />
+                  </div>
+
+                  <div>
+                    <FieldLabel required>Mobile</FieldLabel>
+                    <Input {...register("mobile")} icon={Phone} error={errors.mobile} placeholder="9876543210" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <FieldLabel required>Current City</FieldLabel>
+                    <Input {...register("city")} icon={MapPin} error={errors.city} placeholder="Mumbai" />
+                  </div>
+                  <div>
+                    <FieldLabel required>State</FieldLabel>
+                    <Input {...register("state")} icon={Map} error={errors.state} placeholder="Maharashtra" />
+                  </div>
+                </div>
+
+                <div>
+                  <FieldLabel required>Address</FieldLabel>
+                  <TextArea {...register("address")} rows={3} error={errors.address} />
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold mb-4">Background Information</h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <FieldLabel required>Occupation</FieldLabel>
+                  <Select {...register("occupation")} icon={Briefcase} error={errors.occupation}>
+                    <option value="">Select occupation</option>
+                    <option>Student</option>
+                    <option>Professional</option>
+                    <option>Freelancer</option>
+                    <option>Entrepreneur</option>
+                  </Select>
+                </div>
+
+                <div>
+                  <FieldLabel required>College / Organization</FieldLabel>
+                  <Input {...register("organization")} icon={Building2} error={errors.organization} placeholder="Organization name" />
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <FieldLabel>Social Media Handle (optional)</FieldLabel>
+                <Input {...register("socialmedia")} icon={User} error={errors.socialmedia} placeholder="@yourhandle" />
+              </div>
+
+              <div className="mt-4">
+                <FieldLabel>Previous experience (optional)</FieldLabel>
+                <Input {...register("previous_experience")} icon={User} error={errors.previous_experience} placeholder="Briefly mention any relevant experience" />
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold mb-4">Roles & Motivation</h2>
+
+              <div className="mb-4">
+                <p className="block text-sm font-medium text-gray-700 mb-3">Roles of Interest <span className="text-red-500">*</span></p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {rolesList.map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => toggleRole(r)}
+                      className={`px-5 py-3 rounded-xl text-sm font-medium transition-all ${selectedRoles.includes(r)
+                        ? "bg-orange-500 text-white shadow-md"
+                        : "bg-gray-100 text-gray-700 hover:bg-orange-50"
+                        }`}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
+                {errors.roles ? <ErrorText>{errors.roles.message}</ErrorText> : null}
+              </div>
+
+              <div>
+                <FieldLabel required>Why do you want to become a Saarthi?</FieldLabel>
+                <TextArea {...register("motivation")} rows={6} error={errors.motivation} />
+              </div>
+            </section>
+
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl shadow hover:shadow-lg transition-all disabled:opacity-50"
+              >
+                {isSubmitting ? "Submitting..." : "Submit Application"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <style>{`
+        .animate-fadeIn { animation: fadeIn .6s ease-out }
+        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+      `}</style>
+    </div>
+  );
+}
