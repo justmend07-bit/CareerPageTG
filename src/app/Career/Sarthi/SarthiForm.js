@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,15 +30,15 @@ const ACCEPTED_DOC_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 const SarthiSchema = z.object({
   full_name: z.string().min(3, "Enter your full name (min 3 chars)"),
   dob: z
-  .string()
-  .refine(
-    (val) => {
-      const today = new Date();
-      const selected = new Date(val);
-      return selected <= today;   // 🚨 prevent future dates
-    },
-    { message: "Date cannot be in the future" }
-  ),
+    .string()
+    .refine(
+      (val) => {
+        const today = new Date();
+        const selected = new Date(val);
+        return selected <= today;   // 🚨 prevent future dates
+      },
+      { message: "Date cannot be in the future" }
+    ),
   gender: z.enum(["Male", "Female", "Other", "Prefer not to say"]).optional(),
   aadhar_number: z
     .string()
@@ -57,8 +59,9 @@ const SarthiSchema = z.object({
   roles: z.array(z.string()).min(1, "Select at least one role"),
   motivation: z.string().min(20, "Tell us why — at least 20 characters"),
   // Files validated separately
-  aadhar_front: z.any().optional(),
-  profile_photo: z.any().optional(),
+  aadhar_front: z.any().refine((f) => f, "Aadhar front is required"),
+profile_photo: z.any().refine((f) => f, "Profile photo is required"),
+
 });
 
 const rolesList = [
@@ -123,11 +126,11 @@ const TextArea = ({ error, ...props }) => (
   </div>
 );
 
-function FileInput({ label, accept, controller, previewUrl, setPreviewUrl, error }) {
+function FileInput({ label, accept, controller, previewUrl, setPreviewUrl, error, required }) {
   // controller: from react-hook-form Controller field
   return (
     <div>
-      <FieldLabel required>{label}</FieldLabel>
+      <FieldLabel required={required}>{label}</FieldLabel>
       <div className="flex gap-4 items-start">
         <div className="flex-1">
           <label className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-orange-400 hover:bg-orange-50/30 transition-all block">
@@ -181,7 +184,7 @@ export default function SaarthiRegistrationForm() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [serverError, setServerError] = useState(null);
   const [success, setSuccess] = useState("");
-
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -220,6 +223,7 @@ export default function SaarthiRegistrationForm() {
   const onSubmit = async (values) => {
     setServerError(null);
     setSuccess("");
+    console.log("BACKEND =", BACKEND);
 
     values.roles = selectedRoles;
     if (selectedRoles.length === 0) {
@@ -304,18 +308,20 @@ export default function SaarthiRegistrationForm() {
       const data = await res.json();
       // Backend might return success: true OR {message: "..."} OR anything truthy
       if (data?.success || data?.message || data?.status === "success") {
-        setSuccess(data?.message || "Application submitted successfully!");
-        reset();
-        setSelectedRoles([]);
-        setAadharPreview(null);
-        setPhotoPreview(null);
+        sessionStorage.setItem("saarthi_success", "true");
+        router.push("/Career/Sarthi/Register/success");
+
+        // run resets AFTER navigation safely
+        setTimeout(() => {
+          reset();
+          setSelectedRoles([]);
+          setAadharPreview(null);
+          setPhotoPreview(null);
+        }, 0);
         return;
       }
-      if (res.ok) {
-        sessionStorage.setItem("saarthi_success", "1");
-        window.location.href = "/Career/Sarthi/success";
-        return;
-      }
+
+
       // if no known success signal
       throw new Error(data?.message || "Unknown server response");
 
@@ -349,13 +355,7 @@ export default function SaarthiRegistrationForm() {
         </div>
 
         <div className="bg-white shadow-md rounded-3xl p-8 md:p-10 border border-orange-200/30">
-          {success && (
-            <div className="bg-green-100 text-green-800 px-4 py-3 rounded-xl mb-6 border border-green-300">{success}</div>
-          )}
 
-          {serverError && (
-            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-xl mb-6 border border-red-200">{serverError}</div>
-          )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             <section>
@@ -390,7 +390,7 @@ export default function SaarthiRegistrationForm() {
                   <Input {...register("aadhar_number")} icon={CreditCard} placeholder="123412341234" error={errors.aadhar_number} />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 " >
                   <Controller
                     control={control}
                     name="aadhar_front"
@@ -402,6 +402,7 @@ export default function SaarthiRegistrationForm() {
                         previewUrl={aadharPreview}
                         setPreviewUrl={setAadharPreview}
                         error={errors.aadhar_front}
+                        required
                       />
                     )}
                   />
@@ -417,6 +418,7 @@ export default function SaarthiRegistrationForm() {
                         previewUrl={photoPreview}
                         setPreviewUrl={setPhotoPreview}
                         error={errors.profile_photo}
+                        required
                       />
                     )}
                   />
@@ -524,6 +526,13 @@ export default function SaarthiRegistrationForm() {
             </div>
           </form>
         </div>
+        {/* {success && (
+            <div className="bg-green-100 text-green-800 px-4 py-3 mt-5 rounded-xl mb-6 border border-green-300">{success}</div>
+          )}
+
+          {serverError && (
+            <div className="bg-red-50 text-red-700 px-4 py-3 mt-5 rounded-xl mb-6 border border-red-200">{serverError}</div>
+          )} */}
       </div>
 
       <style>{`

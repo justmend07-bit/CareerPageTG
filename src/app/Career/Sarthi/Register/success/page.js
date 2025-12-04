@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,34 +14,36 @@ export default function SarthiSuccessPage() {
 
   const router = useRouter();
 
-  const [allowed, setAllowed] = useState(null); // null = loading, true = show page, false = redirect
-
   useEffect(() => {
-    const ok = sessionStorage.getItem("saarthi_success");
+    // ✅ Allow only if redirected from payment page
+    const SarthiRegister = sessionStorage.getItem('saarthi_success');
 
-    if (!ok) {
-      setAllowed(false);
-      router.replace("/");
+    if (!SarthiRegister) {
+      // 🚫 Redirect user if they directly access the success page
+      router.replace('/');
       return;
     }
 
-    // If submission is valid
-    sessionStorage.removeItem("saarthi_success");
-    setAllowed(true);
-  }, []);
+    // ✅ Remove session flag when user leaves or closes tab
+    const cleanup = () => sessionStorage.removeItem('saarthi_success');
+    window.addEventListener('beforeunload', cleanup);
 
-  // While checking → SHOW NOTHING
-  if (allowed === null) return null;
+    // ✅ Prevent back navigation to payment page
+    const handlePopState = () => router.replace('/');
+    window.addEventListener('popstate', handlePopState);
 
-  // If allowed === false, redirect already triggered
-  if (!allowed) return null;
-
+    // ✅ Cleanup event listeners
+    return () => {
+      window.removeEventListener('beforeunload', cleanup);
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [router]);
   return (
     <div className="min-h-screen flex items-center justify-center bg-orange-50 px-6 py-20">
       <div className="bg-white shadow-xl rounded-3xl p-10 max-w-lg w-full text-center border border-orange-200">
-        
+
         {/* Success Icon */}
-        <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-6" />
+        <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-6 animate-tick" />
 
         {/* Title */}
         <h1 className="text-3xl font-extrabold text-gray-800 mb-3">
@@ -71,6 +73,29 @@ export default function SarthiSuccessPage() {
           </Link>
         </div>
       </div>
+      <style>
+        {`
+  @keyframes tick {
+    0% {
+      transform: scale(0.2) rotate(-20deg);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.3) rotate(3deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+    }
+  }
+  .animate-tick {
+    animation: tick 0.6s ease-out forwards;
+    transform-origin: center;
+  }
+`}
+      </style>
+
     </div>
+
   );
 }
