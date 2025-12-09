@@ -26,3 +26,30 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* 🌙 Darker placeholder on mobile */
+@media (max-width: 640px) {
+  ::placeholder {
+    color: #4b5563 !important; /* gray-700 */
+    opacity: 1 !important;
+  }
+}
+
+/* 💻 Lighter placeholder on desktop */
+@media (min-width: 641px) {
+  ::placeholder {
+    color: #6b7280 !important; /* gray-500 */
+    opacity: 1 !important;
+  }
+}
+
+/* 🌗 Dark Mode Support */
+.dark ::placeholder {
+  color: #9ca3af !important; /* gray-400 */
+}
+
+input:focus::placeholder,
+textarea:focus::placeholder {
+  opacity: 0.4;
+  transition: opacity 0.25s ease;
+}

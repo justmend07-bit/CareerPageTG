@@ -60,7 +60,7 @@ const SarthiSchema = z.object({
   motivation: z.string().min(20, "Tell us why — at least 20 characters"),
   // Files validated separately
   aadhar_front: z.any().refine((f) => f, "Aadhar front is required"),
-profile_photo: z.any().refine((f) => f, "Profile photo is required"),
+  profile_photo: z.any().refine((f) => f, "Profile photo is required"),
 
 });
 
@@ -90,9 +90,15 @@ const Input = React.forwardRef(({ icon: Icon, error, className = "", ...props },
       <input
         ref={ref}
         {...props}
-        className={`w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"
-          } ${className}`}
+        className={`
+    w-full pl-12 pr-4 py-3 rounded-xl outline-none
+    placeholder-gray-700 sm:placeholder-gray-500   /* responsive */
+    transition-all
+    ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"}
+    ${className}
+  `}
       />
+
     </div>
     {error ? <ErrorText>{error.message}</ErrorText> : null}
   </div>
@@ -105,7 +111,7 @@ const Select = ({ icon: Icon, children, error, ...props }) => (
       {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />}
       <select
         {...props}
-        className={`w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"
+        className={`placeholder-gray-400  w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"
           }`}
       >
         {children}
@@ -118,10 +124,15 @@ const Select = ({ icon: Icon, children, error, ...props }) => (
 const TextArea = ({ error, ...props }) => (
   <div>
     <textarea
-      {...props}
-      className={`w-full px-4 py-3 rounded-xl outline-none transition-all resize-none ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"
-        }`}
-    />
+  {...props}
+  className={`
+    w-full px-4 py-3 rounded-xl outline-none resize-none
+    placeholder-gray-700 sm:placeholder-gray-500
+    transition-all
+    ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"}
+  `}
+/>
+
     {error ? <ErrorText>{error.message}</ErrorText> : null}
   </div>
 );
