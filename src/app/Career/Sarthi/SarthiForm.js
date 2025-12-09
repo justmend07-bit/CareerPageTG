@@ -91,8 +91,8 @@ const Input = React.forwardRef(({ icon: Icon, error, className = "", ...props },
         ref={ref}
         {...props}
         className={`
-    w-full pl-12 pr-4 py-3 rounded-xl outline-none
-    placeholder-gray-700 sm:placeholder-gray-500   /* responsive */
+    w-full pl-12 pr-4 py-3 rounded-xl outline-none text-black
+    placeholder-gray-500  /* responsive */
     transition-all
     ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"}
     ${className}
@@ -111,7 +111,7 @@ const Select = ({ icon: Icon, children, error, ...props }) => (
       {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />}
       <select
         {...props}
-        className={`placeholder-gray-400  w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"
+        className={`placeholder-gray-500 text-black w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"
           }`}
       >
         {children}
@@ -127,7 +127,7 @@ const TextArea = ({ error, ...props }) => (
   {...props}
   className={`
     w-full px-4 py-3 rounded-xl outline-none resize-none
-    placeholder-gray-600 sm:placeholder-gray-500
+    placeholder-gray-500 text-black
     transition-all
     ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"}
   `}
