@@ -92,7 +92,7 @@ const Input = React.forwardRef(({ icon: Icon, error, className = "", ...props },
         {...props}
         className={`
     w-full pl-12 pr-4 py-3 rounded-xl outline-none text-black
-    placeholder-gray-500  /* responsive */
+    placeholder-gray-400  /* responsive */
     transition-all
     ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"}
     ${className}
@@ -111,7 +111,7 @@ const Select = ({ icon: Icon, children, error, ...props }) => (
       {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />}
       <select
         {...props}
-        className={`placeholder-gray-500 text-black w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"
+        className={`placeholder-gray-400 text-black w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"
           }`}
       >
         {children}
@@ -127,7 +127,7 @@ const TextArea = ({ error, ...props }) => (
   {...props}
   className={`
     w-full px-4 py-3 rounded-xl outline-none resize-none
-    placeholder-gray-500 text-black
+    placeholder-gray-400 text-black
     transition-all
     ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"}
   `}
@@ -370,7 +370,7 @@ export default function SaarthiRegistrationForm() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             <section>
-              <h2 className="text-2xl font-bold mb-4">Personal Information</h2>
+              <h2 className="text-2xl text-black font-bold mb-4">Personal Information</h2>
 
               <div className="space-y-4">
                 <div>
@@ -381,7 +381,7 @@ export default function SaarthiRegistrationForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <FieldLabel required>Date of Birth</FieldLabel>
-                    <Input type="date" {...register("dob")} icon={Calendar} error={errors.dob} />
+                    <Input type="date" {...register("dob")} icon={Calendar} error={errors.dob} className="text-black placeholder-gray-400"  />
                   </div>
 
                   <div>
@@ -466,7 +466,7 @@ export default function SaarthiRegistrationForm() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold mb-4">Background Information</h2>
+              <h2 className="text-2xl font-bold mb-4 text-black">Background Information</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -498,7 +498,7 @@ export default function SaarthiRegistrationForm() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold mb-4">Roles & Motivation</h2>
+              <h2 className="text-2xl font-bold mb-4 text-black">Roles & Motivation</h2>
 
               <div className="mb-4">
                 <p className="block text-sm font-medium text-gray-700 mb-3">Roles of Interest <span className="text-red-500">*</span></p>
