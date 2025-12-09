@@ -127,7 +127,7 @@ const TextArea = ({ error, ...props }) => (
   {...props}
   className={`
     w-full px-4 py-3 rounded-xl outline-none resize-none
-    placeholder-gray-700 sm:placeholder-gray-500
+    placeholder-gray-600 sm:placeholder-gray-500
     transition-all
     ${error ? "ring-2 ring-red-300 bg-red-50" : "bg-gray-100 focus:ring-2 focus:ring-orange-400"}
   `}
